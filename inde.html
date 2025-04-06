@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>KDJ Salon - Premier Beauty & Hair Salon in Galle, Sri Lanka</title>
+    <meta name="description" content="Experience luxury hair styling, beauty treatments, bridal makeovers, and relaxing spa services at KDJ Salon in Galle, Sri Lanka. Book your appointment today!">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/@heroicons/react@2.1.1/dist/index.css">
+     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        /* Custom Styles (Optional) */
+        body {
+            font-family: 'Inter', sans-serif; /* Example using a Google Font - ensure you link it in <head> if used */
+            /* Or stick with Tailwind's default sans-serif */
+        }
+        /* Simple fade-in animation placeholder (would ideally use Intersection Observer) */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Place behind content */
+            opacity: 0.5; /* Adjust opacity */
+        }
+        /* Style for header change on scroll */
+        .header-scrolled {
+            background-color: rgba(190, 24, 93, 0.95); /* Slightly transparent primary */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            backdrop-filter: blur(5px);
+        }
+         /* Mobile Menu Transition */
+        #mobile-menu {
+            transition: transform 0.3s ease-in-out;
+        }
+    </style>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                DEFAULT: '#BE185D', // Pink-700
+                light: '#DB2777', // Pink-600
+                dark: '#9D174D', // Pink-800
+              },
+              secondary: {
+                DEFAULT: '#FCE7F3', // Pink-50
+                dark: '#FBCFE8' // Pink-100
+              },
+              accent: '#F472B6', // Pink-400
+              neutral: {
+                 light: '#F9FAFB', // Gray-50
+                 DEFAULT: '#6B7280', // Gray-500
+                 dark: '#1F2937'  // Gray-800
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'ui-sans-serif', 'system-ui'], // Example font stack
+              serif: ['ui-serif', 'Georgia'],
+            }
+          }
+        }
+      }
+    </script>
+</head>
+<body class="bg-neutral-light text-neutral-dark antialiased">
+
+    <header id="main-header" class="bg-primary text-white shadow-lg fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#home" class="text-3xl font-bold tracking-tight hover:opacity-90 transition-opacity">KDJ Salon</a>
+
+            <nav class="hidden md:flex space-x-6">
+                <a href="#home" class="text-base font-medium hover:text-pink-200 transition-colors">Home</a>
+                <a href="#services" class="text-base font-medium hover:text-pink-200 transition-colors">Services</a>
+                <a href="#about" class="text-base font-medium hover:text-pink-200 transition-colors">About</a>
+                 <a href="#choose-us" class="text-base font-medium hover:text-pink-200 transition-colors">Why Us</a>
+                <a href="#gallery" class="text-base font-medium hover:text-pink-200 transition-colors">Gallery</a>
+                <a href="#testimonials" class="text-base font-medium hover:text-pink-200 transition-colors">Testimonials</a>
+                <a href="#contact" class="text-base font-medium hover:text-pink-200 transition-colors">Contact</a>
+            </nav>
+
+            <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                 <ion-icon name="menu-outline" class="w-8 h-8"></ion-icon>
+            </button>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden absolute top-full left-0 right-0 bg-primary/95 backdrop-blur-sm shadow-lg transform -translate-y-full -z-10">
+             <nav class="flex flex-col items-center py-4 space-y-3">
+                 <a href="#home" class="block w-full text-center py-2 text-lg font-medium hover:bg-primary-light transition-colors mobile-nav-link">Home</a>
+                 <a href="#services" class="block w-full text-center py-2 text-lg font-medium hover:bg-primary-light transition-colors mobile-nav-link">Services</a>
+                 <a href="#about" class="block w-full text-center py-2 text-lg font-medium hover:bg-primary-light transition-colors mobile-nav-link">About</a>
+                 <a href="#choose-us" class="block w-full text-center py-2 text-lg font-medium hover:bg-primary-light transition-colors mobile-nav-link">Why Us</a>
+                 <a href="#gallery" class="block w-full text-center py-2 text-lg font-medium hover:bg-primary-light transition-colors mobile-nav-link">Gallery</a>
+                 <a href="#testimonials" class="block w-full text-center py-2 text-lg font-medium hover:bg-primary-light transition-colors mobile-nav-link">Testimonials</a>
+                 <a href="#contact" class="block w-full text-center py-2 text-lg font-medium hover:bg-primary-light transition-colors mobile-nav-link">Contact & Booking</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="relative min-h-screen flex items-center justify-center text-center bg-gradient-to-b from-secondary via-secondary/80 to-neutral-light overflow-hidden pt-20">
+            <canvas id="hero-canvas"></canvas> <div class="z-10 relative px-6">
+                <h1 class="text-5xl md:text-7xl font-extrabold text-primary mb-4 leading-tight animate-fade-in-slow">
+                    Radiate Confidence.
+                </h1>
+                <p class="text-xl md:text-2xl text-neutral-dark max-w-2xl mx-auto mb-8 animate-fade-in-slow animation-delay-300">
+                    Discover your ultimate beauty experience at KDJ Salon, Galle's destination for exquisite hair, skin, and bridal services.
+                </p>
+                <a href="#services" class="inline-block bg-primary hover:bg-primary-dark text-white py-3 px-8 rounded-full text-lg font-semibold shadow-lg transition duration-300 transform hover:scale-105 animate-fade-in-slow animation-delay-600">
+                    Explore Our Services
+                </a>
+                 <div class="mt-12 text-neutral">
+                     <p class="text-sm">Scroll down to discover more</p>
+                     <ion-icon name="arrow-down-outline" class="w-6 h-6 mx-auto mt-2 animate-bounce"></ion-icon>
+                 </div>
+            </div>
+        </section>
+
+        <section id="services" class="py-20 md:py-28 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-bold text-center text-primary mb-16">Our Signature Services</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+                    <div class="bg-neutral-light p-8 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-2">
+                         <div class="text-primary mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+                               <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.037-.502.068-.75.097h4.5c-.248-.03-.499-.06-.75-.097M9.75 3.104C9.374 2.635 8.77 2.25 8 2.25c-.77 0-1.374.385-1.75.854M14.25 3.104v5.714m0 0a2.25 2.25 0 0 0 .659 1.591l4.401 4.401M14.25 3.104c.251.037.502.068.75.097h-4.5c.248-.03.499-.06.75-.097M14.25 3.104c.374 2.635.978 2.25 1.75 2.25.77 0 1.374.385 1.75.854m-7.5 9.25h5.25m-5.25 0a1.5 1.5 0 0 1-1.5-1.5v-2.25l-.873-.873.15-.15a3 3 0 1 1 4.243 4.243l-.15.15-.873.873v2.25a1.5 1.5 0 0 1-1.5 1.5Z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-primary-dark mb-3">Expert Hair Styling</h3>
+                        <p class="text-neutral">Transform your look with precision cuts, vibrant coloring, smoothing Keratin treatments, and flawless rebonding using premium international products.</p>
+                    </div>
+                    <div class="bg-neutral-light p-8 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-2">
+                        <div class="text-primary mb-4">
+                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.79-.44 1.06-.272.272-.646.44-1.06.44a1.5 1.5 0 0 1-1.5-1.5c0-.414.168-.79.44-1.06.272-.272.646-.44 1.06-.44.828 0 1.5.672 1.5 1.5Zm6.75 0c0 .414-.168.79-.44 1.06-.272.272-.646.44-1.06.44a1.5 1.5 0 0 1-1.5-1.5c0-.414.168-.79.44-1.06.272-.272.646-.44 1.06-.44.828 0 1.5.672 1.5 1.5Z" />
+                           </svg>
+                       </div>
+                        <h3 class="text-2xl font-semibold text-primary-dark mb-3">Revitalizing Beauty</h3>
+                        <p class="text-neutral">Indulge in personalized herbal facials, deep cleansing treatments, gentle waxing, and precise threading designed for your unique skin type.</p>
+                    </div>
+                    <div class="bg-neutral-light p-8 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-2">
+                        <div class="text-primary mb-4">
+                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.355a15.07 15.07 0 0 1-4.5 0m4.5 0v-.318c0-.597.237-1.17.659-1.591l.645-.645a2.25 2.25 0 0 1 1.591-.659A2.25 2.25 0 0 1 19.5 12.75v-.618a2.25 2.25 0 0 0-2.138-2.243l-.44-.039a3 3 0 0 0-2.91 1.526M4.5 12.75v-.618a2.25 2.25 0 0 1 2.138-2.243l.44-.039a3 3 0 0 1 2.91 1.526" />
+                           </svg>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-primary-dark mb-3">Dream Bridal Packages</h3>
+                        <p class="text-neutral">Look radiant on your special day with bespoke bridal makeovers, elegant saree draping, trial sessions, and comprehensive beauty preparation.</p>
+                    </div>
+                     <div class="bg-neutral-light p-8 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-2">
+                        <div class="text-primary mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75v6.75m6-3.75H6" /> {/* Represents Kids & Gents */}
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-primary-dark mb-3">Kids & Gents Grooming</h3>
+                        <p class="text-neutral">Sharp styles for men including relaxing head massages, and gentle, fun cuts for children in a comfortable environment.</p>
+                    </div>
+                     <div class="bg-neutral-light p-8 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 transform hover:-translate-y-2">
+                        <div class="text-primary mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+                               <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-4.5 0V6.75A.75.75 0 0 1 14.25 6h1.5a.75.75 0 0 1 .75.75v3.75m-7.5 0v-3a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75v3m-4.5 0h.008v.008H8.25v-.008Zm3.75 0h.008v.008h-.008v-.008Zm3 0h.008v.008h-.008v-.008ZM8.25 15h.008v.008H8.25v-.008Zm3.75 0h.008v.008h-.008v-.008Zm3 0h.008v.008h-.008v-.008Z" /> {/* Represents spa element */}
+                            </svg>
+                       </div>
+                        <h3 class="text-2xl font-semibold text-primary-dark mb-3">Relaxing Spa Therapies</h3>
+                        <p class="text-neutral">Unwind and rejuvenate with soothing hot oil treatments, tension-relieving back spa therapy, and calming head massages using natural ingredients.</p>
+                    </div>
+                     </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-20 md:py-28 bg-secondary">
+            <div class="container mx-auto px-6">
+                 <div class="max-w-4xl mx-auto text-center">
+                    <h2 class="text-4xl md:text-5xl font-bold text-primary mb-6">Our Story & Passion</h2>
+                    <p class="text-lg text-neutral mb-6">
+                        Founded in 2018, KDJ Salon quickly became a trusted name for exceptional beauty services in Southern Sri Lanka. We believe that beauty is an expression of confidence and individuality.
+                    </p>
+                    <p class="text-lg text-neutral mb-6">
+                        <span class="font-semibold text-primary-dark">Our Mission:</span> To provide top-tier hair, beauty, and spa services in a welcoming and relaxing environment, using high-quality products and personalized care to help every client look and feel their absolute best.
+                    </p>
+                     <p class="text-lg text-neutral">
+                        Our talented team consists of certified and passionate professionals dedicated to continuous learning and mastering the latest trends and techniques. We're here for your everyday glow, special occasions, and milestone moments like weddings.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="choose-us" class="py-20 md:py-28 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-bold text-center text-primary mb-16">Why Choose KDJ Salon?</h2>
+                 <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+                     <div class="flex flex-col items-center p-6">
+                        <div class="bg-pink-100 p-4 rounded-full mb-4 text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-primary-dark mb-2">Experienced Team</h3>
+                        <p class="text-neutral">Certified professionals passionate about beauty and dedicated to exceptional results.</p>
+                     </div>
+                    <div class="flex flex-col items-center p-6">
+                         <div class="bg-pink-100 p-4 rounded-full mb-4 text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 15h9M7.5 12h9m-9-3h9M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125V4.125c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v2.25c0 .621.504 1.125 1.125 1.125Zm0 7.5h17.25c.621 0 1.125.504 1.125-1.125v-2.25c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v2.25c0 .621.504 1.125 1.125 1.125Z" />
+                            </svg>
+                         </div>
+                        <h3 class="text-xl font-semibold text-primary-dark mb-2">Quality Products</h3>
+                        <p class="text-neutral">We use trusted international and high-quality local brands for lasting beauty.</p>
+                     </div>
+                    <div class="flex flex-col items-center p-6">
+                        <div class="bg-pink-100 p-4 rounded-full mb-4 text-primary">
+                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                             <path stroke-linecap="round" stroke-linejoin="round" d="M6.115 5.19.313 10.984a.75.75 0 0 0 0 1.032l5.802 5.793a.75.75 0 0 0 1.06 0l5.802-5.793a.75.75 0 0 0 0-1.032L7.175 5.19a.75.75 0 0 0-1.06 0Zm12 0L12.313 10.984a.75.75 0 0 0 0 1.032l5.802 5.793a.75.75 0 0 0 1.06 0l5.802-5.793a.75.75 0 0 0 0-1.032L19.175 5.19a.75.75 0 0 0-1.06 0Z" />
+                           </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-primary-dark mb-2">Relaxing Ambiance</h3>
+                        <p class="text-neutral">Enjoy our services in a clean, comfortable, and beautifully designed space.</p>
+                    </div>
+                     <div class="flex flex-col items-center p-6">
+                        <div class="bg-pink-100 p-4 rounded-full mb-4 text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-primary-dark mb-2">Personalized Care</h3>
+                        <p class="text-neutral">We listen to your needs and tailor services to achieve your desired look.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="gallery" class="py-20 md:py-28 bg-secondary">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-bold text-center text-primary mb-16">Our Work & Transformations</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                    <div class="aspect-square bg-pink-100 rounded-lg flex items-center justify-center text-pink-400 hover:shadow-lg transition-shadow duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+                           <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                        </svg>
+                        <span class="sr-only">Gallery Image Placeholder</span>
+                    </div>
+                     <div class="aspect-square bg-pink-100 rounded-lg flex items-center justify-center text-pink-400 hover:shadow-lg transition-shadow duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+                           <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                        </svg>
+                        <span class="sr-only">Gallery Image Placeholder</span>
+                    </div>
+                     <div class="aspect-square bg-pink-100 rounded-lg flex items-center justify-center text-pink-400 hover:shadow-lg transition-shadow duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+                           <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                        </svg>
+                         <span class="sr-only">Gallery Image Placeholder</span>
+                    </div>
+                    <div class="aspect-square bg-pink-100 rounded-lg flex items-center justify-center text-pink-400 hover:shadow-lg transition-shadow duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+                           <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                        </svg>
+                        <span class="sr-only">Gallery Image Placeholder</span>
+                    </div>
+                    </div>
+                 <p class="text-center mt-8 text-neutral">*More images showcasing our client transformations coming soon!</p>
+            </div>
+        </section>
+
+        <section id="testimonials" class="py-20 md:py-28 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-bold text-center text-primary mb-16">What Our Clients Say</h2>
+                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-secondary p-8 rounded-xl shadow-lg border-l-4 border-primary">
+                        <p class="text-neutral italic mb-4">"Absolutely loved my haircut and color! The staff were so friendly and professional. Best salon experience in Galle."</p>
+                        <p class="font-semibold text-primary-dark">- Aisha P.</p>
+                        <div class="text-yellow-400 mt-2">★★★★★</div>
+                    </div>
+                     <div class="bg-secondary p-8 rounded-xl shadow-lg border-l-4 border-primary">
+                        <p class="text-neutral italic mb-4">"My bridal makeover was stunning! KDJ Salon made me feel like a princess on my special day. Highly recommend their bridal services."</p>
+                        <p class="font-semibold text-primary-dark">- Nethmi R.</p>
+                        <div class="text-yellow-400 mt-2">★★★★★</div>
+                    </div>
+                     <div class="bg-secondary p-8 rounded-xl shadow-lg border-l-4 border-primary">
+                        <p class="text-neutral italic mb-4">"The herbal facial was so relaxing and left my skin glowing. A truly wonderful and pampering experience."</p>
+                        <p class="font-semibold text-primary-dark">- Fatima S.</p>
+                         <div class="text-yellow-400 mt-2">★★★★★</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="py-20 md:py-28 bg-neutral-light">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-bold text-primary mb-8 text-center">Book Your Appointment</h2>
+                <p class="text-lg text-neutral text-center max-w-2xl mx-auto mb-12">
+                    Ready to experience the KDJ difference? Contact us to schedule your visit or inquire about our services. We look forward to welcoming you!
+                </p>
+
+                <div class="grid lg:grid-cols-2 gap-12 items-start">
+                    <form class="bg-white p-8 rounded-xl shadow-xl space-y-6">
+                         <h3 class="text-2xl font-semibold text-primary-dark mb-4">Send Us a Message</h3>
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-neutral-dark mb-1">Your Name</label>
+                            <input type="text" id="name" name="name" placeholder="Enter your full name" class="w-full p-3 border border-gray-300 rounded-md focus:ring-primary focus:border-primary transition duration-200" required>
+                        </div>
+                         <div>
+                            <label for="email" class="block text-sm font-medium text-neutral-dark mb-1">Your Email</label>
+                            <input type="email" id="email" name="email" placeholder="you@example.com" class="w-full p-3 border border-gray-300 rounded-md focus:ring-primary focus:border-primary transition duration-200" required>
+                        </div>
+                         <div>
+                            <label for="phone" class="block text-sm font-medium text-neutral-dark mb-1">Phone Number (Optional)</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+94 XX XXX XXXX" class="w-full p-3 border border-gray-300 rounded-md focus:ring-primary focus:border-primary transition duration-200">
+                        </div>
+                         <div>
+                             <label for="service" class="block text-sm font-medium text-neutral-dark mb-1">Service Interested In (Optional)</label>
+                             <select id="service" name="service" class="w-full p-3 border border-gray-300 rounded-md focus:ring-primary focus:border-primary transition duration-200 bg-white">
+                                <option value="">-- Select a Service --</option>
+                                <option value="Hair Styling">Hair Styling</option>
+                                <option value="Beauty & Skin">Beauty & Skin</option>
+                                <option value="Bridal Services">Bridal Services</option>
+                                <option value="Kids & Gents">Kids & Gents Grooming</option>
+                                <option value="Massage & Spa">Massage & Spa</option>
+                                <option value="Other Inquiry">Other Inquiry</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-neutral-dark mb-1">Your Message / Preferred Date</label>
+                            <textarea id="message" name="message" placeholder="Tell us about your requirements or preferred appointment time..." rows="5" class="w-full p-3 border border-gray-300 rounded-md focus:ring-primary focus:border-primary transition duration-200" required></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-primary hover:bg-primary-dark text-white py-3 px-6 rounded-md text-lg font-semibold shadow-md transition duration-300 transform hover:scale-105">
+                            Send Inquiry
+                        </button>
+                     </form>
+
+                    <div class="space-y-8 mt-8 lg:mt-0">
+                        <div class="bg-white p-8 rounded-xl shadow-xl">
+                            <h3 class="text-2xl font-semibold text-primary-dark mb-4">Contact Details</h3>
+                            <div class="space-y-3 text-neutral">
+                                <p class="flex items-center">
+                                    <ion-icon name="location-outline" class="w-6 h-6 mr-3 text-primary"></ion-icon>
+                                    No. 23, Main Street, Galle, Sri Lanka
+                                </p>
+                                <p class="flex items-center">
+                                    <ion-icon name="call-outline" class="w-6 h-6 mr-3 text-primary"></ion-icon>
+                                     <a href="tel:+94774567890" class="hover:text-primary transition-colors">+94 77 456 7890</a>
+                                </p>
+                                <p class="flex items-center">
+                                     <ion-icon name="mail-outline" class="w-6 h-6 mr-3 text-primary"></ion-icon>
+                                    <a href="mailto:hello@kdjsalon.lk" class="hover:text-primary transition-colors">hello@kdjsalon.lk</a>
+                                </p>
+                                <p class="flex items-center">
+                                     <ion-icon name="time-outline" class="w-6 h-6 mr-3 text-primary"></ion-icon>
+                                     Open: 9:00 AM - 8:00 PM Daily <br>(Closed on Poya Days)
+                                </p>
+                            </div>
+                             <div class="mt-6 pt-6 border-t border-gray-200">
+                                 <h4 class="text-lg font-semibold text-primary-dark mb-3">Follow Us</h4>
+                                 <div class="flex space-x-4">
+                                     <a href="#" aria-label="Facebook" class="text-neutral hover:text-primary transition-colors">
+                                         <ion-icon name="logo-facebook" class="w-7 h-7"></ion-icon>
+                                    </a>
+                                     <a href="#" aria-label="Instagram" class="text-neutral hover:text-primary transition-colors">
+                                         <ion-icon name="logo-instagram" class="w-7 h-7"></ion-icon>
+                                    </a>
+                                     <a href="#" aria-label="WhatsApp" class="text-neutral hover:text-primary transition-colors">
+                                         <ion-icon name="logo-whatsapp" class="w-7 h-7"></ion-icon>
+                                    </a>
+                                 </div>
+                             </div>
+                        </div>
+
+                        <div class="bg-pink-100 h-64 rounded-xl shadow-xl flex items-center justify-center text-pink-400 text-center p-4">
+                            <div class="flex flex-col items-center">
+                                <ion-icon name="map-outline" class="w-12 h-12 mb-2"></ion-icon>
+                                <p class="font-semibold">Interactive Map Coming Soon!</p>
+                                <p class="text-sm">Find us easily at No. 23, Main Street, Galle.</p>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-primary-dark text-pink-100 py-8 mt-16">
+        <div class="container mx-auto px-6 text-center">
+             <p class="mb-2">&copy; 2025 KDJ Salon. All Rights Reserved.</p>
+             <p class="text-sm">Designed with ❤️ in Sri Lanka 🇱🇰</p>
+             <a href="#home" class="inline-block mt-4 text-pink-200 hover:text-white transition-colors text-sm">
+                 Back to Top &uarr;
+             </a>
+        </div>
+    </footer>
+
+    <script>
+        // --- Mobile Menu Toggle ---
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileNavLinks = mobileMenu.querySelectorAll('.mobile-nav-link');
+
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('-translate-y-full');
+            mobileMenu.classList.toggle('opacity-0'); // Optional: fade effect
+            // Toggle icon (optional)
+             const icon = menuButton.querySelector('ion-icon');
+             if (icon.getAttribute('name') === 'menu-outline') {
+                 icon.setAttribute('name', 'close-outline');
+             } else {
+                 icon.setAttribute('name', 'menu-outline');
+             }
+        });
+
+        // Close menu when a link is clicked
+        mobileNavLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('-translate-y-full');
+                 mobileMenu.classList.add('opacity-0');
+                 menuButton.querySelector('ion-icon').setAttribute('name', 'menu-outline');
+            });
+        });
+
+        // --- Header Style Change on Scroll ---
+        const header = document.getElementById('main-header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) { // Adjust scroll threshold as needed
+                header.classList.add('header-scrolled');
+            } else {
+                header.classList.remove('header-scrolled');
+            }
+        });
+
+        // --- Simple Fade-in Effect on Scroll (Basic Implementation) ---
+        // For better performance and control, use Intersection Observer API
+        const fadeElements = document.querySelectorAll('.fade-in');
+        function checkFade() {
+             fadeElements.forEach(el => {
+                 const rect = el.getBoundingClientRect();
+                 // If element is partially in viewport
+                 if (rect.top < window.innerHeight && rect.bottom >= 0) {
+                    el.classList.add('visible');
+                 }
+             });
+         }
+        // window.addEventListener('scroll', checkFade);
+        // window.addEventListener('resize', checkFade);
+        // document.addEventListener('DOMContentLoaded', checkFade);
+        // Disabled for now - uncomment above lines and add 'fade-in' class to elements you want to animate
+
+         // --- Three.js Background Animation ---
+        let scene, camera, renderer, particles, particleMaterial;
+        const canvas = document.getElementById('hero-canvas');
+        const heroSection = document.getElementById('home');
+
+        function initThreeJS() {
+            scene = new THREE.Scene();
+            const fov = 75;
+            const aspect = heroSection.offsetWidth / heroSection.offsetHeight;
+            const near = 0.1;
+            const far = 1000;
+            camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+            camera.position.z = 5; // Adjust camera distance
+
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true }); // alpha: true for transparent background
+            renderer.setSize(heroSection.offsetWidth, heroSection.offsetHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimize for high DPI screens
+
+            // Particles
+            const particleCount = 300; // Adjust particle density
+            const positions = new Float32Array(particleCount * 3);
+
+            for (let i = 0; i < particleCount * 3; i++) {
+                positions[i] = (Math.random() - 0.5) * 15; // Spread particles out
+            }
+
+            const particlesGeometry = new THREE.BufferGeometry();
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+             particleMaterial = new THREE.PointsMaterial({
+                 color: 0xF472B6, // Accent color
+                 size: 0.03,      // Adjust particle size
+                 sizeAttenuation: true, // Particles smaller further away
+                 transparent: true,
+                 opacity: 0.6     // Adjust particle opacity
+             });
+
+            particles = new THREE.Points(particlesGeometry, particleMaterial);
+            scene.add(particles);
+
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+             // Subtle animation: slow rotation or movement
+            const elapsedTime = Date.now() * 0.0001; // Slow down time
+            particles.rotation.y = elapsedTime * 0.5;
+             // particles.rotation.x = elapsedTime * 0.2;
+
+             // Optional: Make particles move slightly
+            // particles.geometry.attributes.position.array.forEach((value, index) => {
+            //     if (index % 3 === 1) { // Modify y position
+            //         particles.geometry.attributes.position.array[index] = Math.sin(elapsedTime + index) * 0.1; // Subtle vertical movement
+            //     }
+            // });
+            // particles.geometry.attributes.position.needsUpdate = true;
+
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+             if (camera && renderer && heroSection) {
+                camera.aspect = heroSection.offsetWidth / heroSection.offsetHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(heroSection.offsetWidth, heroSection.offsetHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            }
+        }
+
+        window.addEventListener('resize', onWindowResize);
+
+        // Initialize Three.js after DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+             // checkFade(); // Initial check for fade-in elements
+             initThreeJS();
+        });
+
+    </script>
+
+</body>
+</html>
